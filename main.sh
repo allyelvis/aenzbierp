@@ -1,14 +1,10 @@
 #!/bin/bash
 
-# Define updated project and directories
+# Define variables
 PROJECT_NAME="aenzbiflutter"
 BASE_DIR="$HOME/projects/$PROJECT_NAME"
-FLUTTER_DIR="$HOME/flutter"
-WEB_DIR="$BASE_DIR/web"
-ANDROID_DIR="$BASE_DIR/android"
-IOS_DIR="$BASE_DIR/ios"
-DESKTOP_DIR="$BASE_DIR/desktop"
-LIB_DIR="$BASE_DIR/lib"
+FLUTTER_PROJECT_DIR="$BASE_DIR/flutter_project"
+LIB_DIR="$FLUTTER_PROJECT_DIR/lib"
 CONFIG_DIR="$BASE_DIR/config"
 DOCS_DIR="$BASE_DIR/docs"
 BUILD_DIR="$BASE_DIR/build"
@@ -18,10 +14,7 @@ create_directories() {
     echo "Creating directories..."
 
     mkdir -p $BASE_DIR
-    mkdir -p $WEB_DIR
-    mkdir -p $ANDROID_DIR
-    mkdir -p $IOS_DIR
-    mkdir -p $DESKTOP_DIR
+    mkdir -p $FLUTTER_PROJECT_DIR
     mkdir -p $LIB_DIR
     mkdir -p $CONFIG_DIR
     mkdir -p $DOCS_DIR
@@ -39,7 +32,7 @@ create_files() {
 # $PROJECT_NAME
 
 ## Description
-Aenzbi Flutter is a comprehensive enterprise resource planning system designed to streamline various business processes, including inventory management, invoicing, sales, and more.
+Aenzbi ERP is a comprehensive enterprise resource planning system designed to streamline various business processes, including inventory management, invoicing, sales, and more.
 
 ## Installation
 
@@ -83,8 +76,8 @@ Aenzbi Flutter is a comprehensive enterprise resource planning system designed t
 
 4. Deploy the web build:
    \`\`\`bash
-   mkdir -p $WEB_HOSTING_DIR
-   cp -r build/web/* $WEB_HOSTING_DIR
+   mkdir -p $WEB_DIR
+   cp -r build/web/* $WEB_DIR
    \`\`\`
 
 ## Usage
@@ -121,26 +114,32 @@ EOL
     echo "{}" > $CONFIG_DIR/.env
 
     # Create basic Dart files
-    mkdir -p $BASE_DIR/lib
     cat <<EOL > $LIB_DIR/main.dart
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(AenzbiERPApp());
 
-class MyApp extends StatelessWidget {
+class AenzbiERPApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Aenzbi ERP',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => HomeScreen(),
+        '/inventory': (context) => InventoryScreen(),
+        '/sales': (context) => SalesScreen(),
+        '/reports': (context) => ReportsScreen(),
+      },
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -148,32 +147,76 @@ class MyHomePage extends StatelessWidget {
         title: Text('Aenzbi ERP Home'),
       ),
       body: Center(
-        child: Text('Welcome to Aenzbi ERP!'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text('Welcome to Aenzbi ERP!'),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/inventory');
+              },
+              child: Text('Go to Inventory'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/sales');
+              },
+              child: Text('Go to Sales'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/reports');
+              },
+              child: Text('Go to Reports'),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-EOL
 
-    # Create Flutter build files
-    cat <<EOL > $BASE_DIR/flutter_project/ios/Podfile
-platform :ios, '10.0'
+class InventoryScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Inventory'),
+      ),
+      body: Center(
+        child: Text('Inventory Screen'),
+      ),
+    );
+  }
+}
 
-target 'Runner' do
-  use_frameworks!
-  use_modular_headers!
+class SalesScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Sales'),
+      ),
+      body: Center(
+        child: Text('Sales Screen'),
+      ),
+    );
+  }
+}
 
-  # Flutter Pods
-  flutter_install_all_ios_pods File.dirname(__FILE__)
-end
-
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'
-    end
-  end
-end
+class ReportsScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Reports'),
+      ),
+      body: Center(
+        child: Text('Reports Screen'),
+      ),
+    );
+  }
+}
 EOL
 
     echo "Essential files created successfully!"
@@ -184,7 +227,7 @@ setup_flutter_project() {
     echo "Setting up Flutter project..."
 
     # Create a new Flutter project
-    if [ ! -d "$BASE_DIR/flutter_project" ]; then
+    if [ ! -d "$FLUTTER_PROJECT_DIR" ]; then
         cd $BASE_DIR
         flutter create flutter_project
     else
@@ -192,7 +235,7 @@ setup_flutter_project() {
     fi
 
     # Set up directories for the Flutter project
-    cd flutter_project
+    cd $FLUTTER_PROJECT_DIR
     mkdir -p lib/models
     mkdir -p lib/screens
     mkdir -p lib/widgets
@@ -218,7 +261,7 @@ initialize_git() {
 install_dependencies() {
     echo "Installing project dependencies..."
 
-    cd $BASE_DIR/flutter_project
+    cd $FLUTTER_PROJECT_DIR
 
     # Install Flutter dependencies
     flutter pub get
@@ -230,7 +273,7 @@ install_dependencies() {
 build_project() {
     echo "Building the project..."
 
-    cd $BASE_DIR/flutter_project
+    cd $FLUTTER_PROJECT_DIR
 
     # Build for different platforms
     flutter build apk --release
