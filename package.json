@@ -1,0 +1,11 @@
+{
+  "name": "aenzbierp",
+  "version": "1.0.0",
+  "description": "Every new repl comes with a `.replit` and a `replit.nix` file that let you configure your repl to do just about anything in any language!",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "author": "Allye Elvis Nzeyimana",
+  "license": "ISC"
+}
