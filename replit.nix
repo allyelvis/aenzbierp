@@ -1,5 +1,6 @@
 { pkgs }: {
   deps = [
+    pkgs.run
     pkgs.flutter319
     pkgs.flutter313
     pkgs.flutter
