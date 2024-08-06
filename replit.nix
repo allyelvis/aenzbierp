@@ -1,5 +1,6 @@
 { pkgs }: {
   deps = [
+    pkgs.flutter313
     pkgs.flutter
     pkgs.autorandr
     pkgs.haskellPackages.gogol-androidmanagement
