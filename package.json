@@ -7,5 +7,9 @@
     "test": "npm test"
   },
   "author": "Allye Elvis Nzeyimana",
-  "license": "ISC"
+  "license": "ISC",
+  "directories": {
+    "lib": "lib"
+  },
+  "keywords": []
 }
